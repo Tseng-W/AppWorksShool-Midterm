@@ -11,6 +11,8 @@ class HomeViewController: UIViewController {
     
     private let mockAuthor = Author(email: "mock@email.com", id: "mockId", name: "mockName")
     
+    private var viewingData: BoxLisener<ArticleData?> = BoxLisener(nil)
+    
     @IBOutlet var homeView: HomeView! {
         didSet {
             homeView.delegate = self
@@ -27,8 +29,12 @@ class HomeViewController: UIViewController {
     var articleData = ArticleProvider.shared.articleData
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let vc = segue.destination as? PublishViewController {
-            vc.delegate = self
+        if let controller = segue.destination as? PublishViewController {
+            controller.delegate = self
+            viewingData.bind { articleData in
+                controller.viewStatus = articleData == nil ?
+                    .edit : .view(data: articleData!)
+            }
         }
     }
     
@@ -57,7 +63,7 @@ extension HomeViewController: HomeViewDelegate {
     func toPublish() {
         publishView.isUserInteractionEnabled = true
         
-        NotificationCenter.default.post(name: .updatePublishView, object: self, userInfo: nil)
+        viewingData.value = nil
         
         UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: .curveEaseIn) {
             self.publishView.alpha = 1
@@ -93,7 +99,7 @@ extension HomeViewController: HomeViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.cellForRow(at: indexPath)?.isSelected = false
         
-        NotificationCenter.default.post(name: .updatePublishView, object: self, userInfo: ["data": articleData.value![indexPath.row]])
+        viewingData.value = articleData.value![indexPath.row]
         
         publishView.isUserInteractionEnabled = true
         UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: .curveEaseIn) {

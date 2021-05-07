@@ -16,6 +16,11 @@ protocol PublishDelegate: AnyObject {
 
 class PublishViewController: UIViewController {
     
+    enum Status {
+        case view(data: ArticleData)
+        case edit
+    }
+    
     @IBOutlet var titleTextField: UITextField! {
         didSet {
             titleTextField.delegate = self
@@ -55,25 +60,11 @@ class PublishViewController: UIViewController {
     }
     
     // Mark: Record current article data, if not nil, hidden button and all text field can't edit.
-    private var presentingData: ArticleData? {
+    var viewStatus: Status? {
         didSet {
-            let canEdit = presentingData == nil
-            titleTextField.isEnabled = canEdit
-            categoryTextField.isEnabled = canEdit
-            contentTextView.isEditable = canEdit
-            submitButton.isHidden = !canEdit
-            
-            if canEdit {
-                titleTextField.text = .empty
-                categoryTextField.text = .empty
-                contentTextView.text = contentViewPlaceHolder
-                contentTextView.textColor = .systemGray3
-            } else {
-                titleTextField.text = presentingData!.title
-                categoryTextField.text = presentingData!.category
-                contentTextView.text = presentingData!.content
-                contentTextView.textColor = .black
-            }
+            guard let status = viewStatus,
+                  let _ = titleTextField else { return }
+            initView(status: status)
         }
     }
 
@@ -85,17 +76,31 @@ class PublishViewController: UIViewController {
         tapListener.numberOfTapsRequired = 1
         tapListener.numberOfTouchesRequired = 1
         view.addGestureRecognizer(tapListener)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(initView(notification:)), name: .updatePublishView, object: nil)
     }
-    
-    @objc func initView(notification: Notification) {
-        
-        guard let articleData = notification.userInfo?["data"] as? ArticleData else {
-            presentingData = nil
-            return
+ 
+    func initView(status: Status) {
+        switch status {
+        case .edit:
+            titleTextField.isEnabled = true
+            categoryTextField.isEnabled = true
+            contentTextView.isEditable = true
+            submitButton.isHidden = false
+            
+            titleTextField.text = .empty
+            categoryTextField.text = .empty
+            contentTextView.text = contentViewPlaceHolder
+            contentTextView.textColor = .systemGray3
+        case .view(let data):
+            titleTextField.isEnabled = false
+            categoryTextField.isEnabled = false
+            contentTextView.isEditable = false
+            submitButton.isHidden = true
+            
+            titleTextField.text = data.title
+            categoryTextField.text = data.category
+            contentTextView.text = data.content
+            contentTextView.textColor = .black
         }
-        presentingData = articleData
     }
     
     @objc func disappear() {

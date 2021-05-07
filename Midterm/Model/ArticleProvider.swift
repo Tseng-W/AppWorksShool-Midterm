@@ -64,7 +64,6 @@ class ArticleProvider {
                         }
                     }
                 }
-                
                 self.articleData.value = originData
             }
     }
