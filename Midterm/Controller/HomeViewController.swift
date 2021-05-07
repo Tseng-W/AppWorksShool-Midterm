@@ -28,6 +28,7 @@ class HomeViewController: UIViewController {
         didSet {
             homeView.tableView.reloadData()
             homeView.endRefreshing()
+            LKProgressHUD.dismiss()
         }
     }
     
@@ -39,6 +40,8 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        LKProgressHUD.show()
         
         NotificationCenter.default.addObserver(self, selector: #selector(updateArticalData(notification:)), name: .dataUpdated, object: nil)
         
@@ -54,6 +57,7 @@ class HomeViewController: UIViewController {
 extension HomeViewController: HomeViewDelegate {
     
     func reloadData() {
+        LKProgressHUD.show()
         ArticleProvider.shared.getData()
     }
     
@@ -83,8 +87,10 @@ extension HomeViewController: HomeViewDelegate {
             cell.createdTime.text = Date(timeIntervalSince1970: articleData[indexPath.row].createdTime).toString()
             cell.categoryButton.setTitle(articleData[indexPath.row].category, for: .normal)
             
-            cell.contentField.translatesAutoresizingMaskIntoConstraints = true
-            cell.contentField.sizeToFit()
+            // MARK:
+            let fixedWidth = cell.contentField.frame.size.width
+            let newSize = cell.contentField.sizeThatFits(CGSize(width: fixedWidth, height: .greatestFiniteMagnitude))
+            cell.contentField.frame.size = CGSize(width: max(newSize.width, fixedWidth), height: newSize.height)
             cell.contentField.isScrollEnabled = false
         }
         

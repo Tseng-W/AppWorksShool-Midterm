@@ -47,12 +47,36 @@ class PublishViewController: UIViewController {
         didSet {
             guard let submitButton = submitButton else { return }
             if isCanPublish {
-                submitButton.backgroundColor = .systemGray3
-            } else {
                 submitButton.backgroundColor = .systemIndigo
+            } else {
+                submitButton.backgroundColor = .systemGray3
             }
         }
     }
+    
+    private var presentingData: ArticleData? {
+        didSet {
+            let canEdit = presentingData != nil
+            titleTextField.isEnabled = canEdit
+            categoryTextField.isEnabled = canEdit
+            contentTextView.isEditable = canEdit
+            submitButton.isHidden = !canEdit
+            
+            if canEdit {
+                titleTextField.text = .empty
+                categoryTextField.text = .empty
+                contentTextView.text = contentViewPlaceHolder
+                contentTextView.textColor = .systemGray3
+            } else {
+                titleTextField.text = presentingData!.title
+                categoryTextField.text = presentingData!.category
+                contentTextView.text = presentingData!.content
+                contentTextView.textColor = .black
+            }
+        }
+    }
+
+    private let contentViewPlaceHolder = "輸入內容"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,22 +91,10 @@ class PublishViewController: UIViewController {
     @objc func initView(notification: Notification) {
         
         guard let articleData = notification.userInfo?["data"] as? ArticleData else {
-            titleTextField.isEnabled = true
-            categoryTextField.isEnabled = true
-            contentTextView.isEditable = true
-            submitButton.isHidden = false
-            titleTextField.text = .empty
-            categoryTextField.text = .empty
-            contentTextView.text = .empty
+            presentingData = nil
             return
         }
-        titleTextField.isEnabled = false
-        categoryTextField.isEnabled = false
-        contentTextView.isEditable = false
-        submitButton.isHidden = true
-        titleTextField.text = articleData.title
-        categoryTextField.text = articleData.category
-        contentTextView.text = articleData.content
+        presentingData = articleData
     }
     
     @objc func disappear() {
@@ -99,6 +111,7 @@ class PublishViewController: UIViewController {
            categoryTextField.text != .empty {
             delegate?.publish(self, title: titleTextField.text!, category: categoryTextField.text!, content: contentTextView.text)
             isCanPublish = false
+            delegate?.hidden(self)
             return
         }
         
@@ -109,29 +122,38 @@ class PublishViewController: UIViewController {
 extension PublishViewController: UITextFieldDelegate, UITextViewDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        guard let _ = titleTextField.text,
-              let _ = contentTextView.text,
-              let _ = categoryTextField.text else {
-            isCanPublish = false
+        if categoryTextField.text != .empty,
+           titleTextField.text != .empty,
+           contentTextView.text != .empty,
+           contentTextView.text != contentViewPlaceHolder {
+            isCanPublish = true
             return
         }
-        isCanPublish = true
+        isCanPublish = false
     }
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        textField.tintColor = .black
-        if textField.text == "輸入內容" {
-            textField.text = .empty
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        textView.textColor = .black
+        if textView.text == contentViewPlaceHolder {
+            textView.text = .empty
         }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        guard let _ = titleTextField.text,
-              let _ = contentTextView.text,
-              let _ = categoryTextField.text else {
-            isCanPublish = false
+        if categoryTextField.text != .empty,
+           titleTextField.text != .empty,
+           contentTextView.text != .empty,
+           contentTextView.text != contentViewPlaceHolder {
+            isCanPublish = true
             return
         }
-        isCanPublish = true
+        
+        if contentTextView.text == .empty {
+            contentTextView.textColor = .systemGray3
+            contentTextView.text = contentViewPlaceHolder
+        }
+        
+        isCanPublish = false
     }
 }

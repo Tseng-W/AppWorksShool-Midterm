@@ -94,7 +94,7 @@ class LKProgressHUD {
 
         shared.hud.indicatorView = JGProgressHUDIndeterminateIndicatorView()
 
-        shared.hud.textLabel.text = "Loading"
+        shared.hud.textLabel.text = "讀取中"
 
         shared.hud.show(in: shared.view)
     }

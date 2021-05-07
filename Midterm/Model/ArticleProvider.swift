@@ -17,12 +17,15 @@ class ArticleProvider {
     
     static let shared = ArticleProvider()
     
-    var articleData: [ArticleData] = []
+    var articleData: [ArticleData] = [] {
+        didSet {
+            articleData = articleData.sorted { $0.createdTime > $1.createdTime }
+        }
+    }
     
     let db = Firestore.firestore()
     
     func getData() {
-
         var data: [ArticleData] = []
 
         let articles = db.collection(Collection.articles.rawValue)
@@ -34,6 +37,7 @@ class ArticleProvider {
                     snapShot in
                     try? snapShot.data(as: ArticleData.self)
                 }
+                
                 NotificationCenter.default.post(name: .dataUpdated, object: self, userInfo: ["data": self.articleData])
             }
         }
@@ -58,7 +62,12 @@ class ArticleProvider {
                     case .modified:
                         break
                     case .removed:
-                        break
+                        do {
+                            let removedData = try diff.document.data(as: ArticleData.self)
+                            self.articleData.remove(at: self.articleData.firstIndex { $0.createdTime == removedData?.createdTime && $0.id == removedData?.id }!)
+                        } catch let error {
+                            print(error)
+                        }
                     }
                 }
                 

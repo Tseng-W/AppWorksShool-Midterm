@@ -40,6 +40,8 @@ class HomeView: UIView {
             
             tableView.mj_header = MJRefreshNormalHeader()
             tableView.mj_header?.setRefreshingTarget(self, refreshingAction: #selector(reloadTable))
+            
+            tableView.separatorColor = .white
         }
     }
     
