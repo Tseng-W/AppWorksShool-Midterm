@@ -36,7 +36,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="yL6-wM-qSo">
-                        <rect key="frame" x="36" y="108" width="342" height="362"/>
+                        <rect key="frame" x="20" y="108" width="374" height="362"/>
                         <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                         <color key="textColor" systemColor="labelColor"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
@@ -57,8 +57,8 @@
                     <constraint firstItem="KzX-Nu-5bv" firstAttribute="leading" secondItem="Qd4-Yd-iL5" secondAttribute="leading" id="CT4-OV-p54"/>
                     <constraint firstItem="IH9-ML-nFc" firstAttribute="leading" secondItem="AOF-Sr-AQz" secondAttribute="leading" constant="16" id="EPY-Fg-4JT"/>
                     <constraint firstItem="WSY-p0-ATG" firstAttribute="trailing" secondItem="IH9-ML-nFc" secondAttribute="trailing" id="GK5-8b-zEd"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="yL6-wM-qSo" secondAttribute="trailing" constant="16" id="GmM-6r-Ftc"/>
-                    <constraint firstItem="yL6-wM-qSo" firstAttribute="leading" secondItem="AOF-Sr-AQz" secondAttribute="leadingMargin" constant="16" id="NdB-Q1-vKO"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="yL6-wM-qSo" secondAttribute="trailing" id="GmM-6r-Ftc"/>
+                    <constraint firstItem="yL6-wM-qSo" firstAttribute="leading" secondItem="AOF-Sr-AQz" secondAttribute="leadingMargin" id="NdB-Q1-vKO"/>
                     <constraint firstItem="Qd4-Yd-iL5" firstAttribute="top" secondItem="IH9-ML-nFc" secondAttribute="bottom" constant="8" id="W8l-k1-IPV"/>
                     <constraint firstAttribute="trailing" secondItem="IH9-ML-nFc" secondAttribute="trailing" constant="16" id="eZT-YC-uMC"/>
                     <constraint firstItem="IH9-ML-nFc" firstAttribute="top" secondItem="AOF-Sr-AQz" secondAttribute="top" constant="16" id="g9d-bT-ONn"/>
