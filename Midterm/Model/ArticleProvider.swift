@@ -30,7 +30,7 @@ class ArticleProvider {
                 self.articleData.value = snapShot!.documents.compactMap {
                     snapShot in
                     try? snapShot.data(as: ArticleData.self)
-                }
+                }.sorted { $0.createdTime > $1.createdTime }
             }
         }
     }
@@ -64,7 +64,7 @@ class ArticleProvider {
                         }
                     }
                 }
-                self.articleData.value = originData
+                self.articleData.value = originData.sorted { $0.createdTime > $1.createdTime }
             }
     }
     
