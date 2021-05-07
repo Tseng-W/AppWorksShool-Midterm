@@ -24,13 +24,7 @@ class HomeViewController: UIViewController {
         }
     }
     
-    private var articleData: [ArticleData] = [] {
-        didSet {
-            homeView.tableView.reloadData()
-            homeView.endRefreshing()
-            LKProgressHUD.dismiss()
-        }
-    }
+    var articleData = ArticleProvider.shared.articleData
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let vc = segue.destination as? PublishViewController {
@@ -43,14 +37,13 @@ class HomeViewController: UIViewController {
         
         LKProgressHUD.show()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updateArticalData(notification:)), name: .dataUpdated, object: nil)
+        ArticleProvider.shared.articleData.bind { data in
+            self.homeView.tableView.reloadData()
+            self.homeView.endRefreshing()
+            LKProgressHUD.dismiss()
+        }
         
         ArticleProvider.shared.snapData()
-    }
-    
-    @objc func updateArticalData(notification: Notification) {
-        guard let data = notification.userInfo!["data"] as? [ArticleData] else { return }
-        articleData = data
     }
 }
 
@@ -73,7 +66,7 @@ extension HomeViewController: HomeViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        articleData.count
+        articleData.value?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -81,11 +74,11 @@ extension HomeViewController: HomeViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: HomeTableViewCell.self), for: indexPath)
         
         if let cell = cell as? HomeTableViewCell {
-            cell.titleLabel.text = articleData[indexPath.row].title
-            cell.contentField.text = articleData[indexPath.row].content
-            cell.authorLabel.text = articleData[indexPath.row].author.name
-            cell.createdTime.text = Date(timeIntervalSince1970: articleData[indexPath.row].createdTime).toString()
-            cell.categoryButton.setTitle(articleData[indexPath.row].category, for: .normal)
+            cell.titleLabel.text = articleData.value![indexPath.row].title
+            cell.contentField.text = articleData.value![indexPath.row].content
+            cell.authorLabel.text = articleData.value![indexPath.row].author.name
+            cell.createdTime.text = Date(timeIntervalSince1970: articleData.value![indexPath.row].createdTime).toString()
+            cell.categoryButton.setTitle(articleData.value![indexPath.row].category, for: .normal)
             
             // MARK:
             let fixedWidth = cell.contentField.frame.size.width
@@ -100,7 +93,7 @@ extension HomeViewController: HomeViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.cellForRow(at: indexPath)?.isSelected = false
         
-        NotificationCenter.default.post(name: .updatePublishView, object: self, userInfo: ["data": articleData[indexPath.row]])
+        NotificationCenter.default.post(name: .updatePublishView, object: self, userInfo: ["data": articleData.value![indexPath.row]])
         
         publishView.isUserInteractionEnabled = true
         UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: .curveEaseIn) {

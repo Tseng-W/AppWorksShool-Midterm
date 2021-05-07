@@ -17,28 +17,20 @@ class ArticleProvider {
     
     static let shared = ArticleProvider()
     
-    var articleData: [ArticleData] = [] {
-        didSet {
-            articleData = articleData.sorted { $0.createdTime > $1.createdTime }
-        }
-    }
+    var articleData: BoxLisener<[ArticleData]?> = BoxLisener(nil)
     
     let db = Firestore.firestore()
     
     func getData() {
-        var data: [ArticleData] = []
-
         let articles = db.collection(Collection.articles.rawValue)
         articles.getDocuments { snapShot, error in
             if let error = error {
                 print(error)
             } else {
-                data = snapShot!.documents.compactMap {
+                self.articleData.value = snapShot!.documents.compactMap {
                     snapShot in
                     try? snapShot.data(as: ArticleData.self)
                 }
-                
-                NotificationCenter.default.post(name: .dataUpdated, object: self, userInfo: ["data": self.articleData])
             }
         }
     }
@@ -51,11 +43,13 @@ class ArticleProvider {
                     return
                 }
                 
+                var originData = self.articleData.value ?? []
+                
                 documentChange.documentChanges.forEach { diff in
                     switch diff.type {
                     case .added:
                         do {
-                            try self.articleData.insert(diff.document.data(as: ArticleData.self)!, at: 0)
+                            try originData.insert(diff.document.data(as: ArticleData.self)!, at: 0)
                         } catch let error {
                             print(error)
                         }
@@ -64,14 +58,14 @@ class ArticleProvider {
                     case .removed:
                         do {
                             let removedData = try diff.document.data(as: ArticleData.self)
-                            self.articleData.remove(at: self.articleData.firstIndex { $0.createdTime == removedData?.createdTime && $0.id == removedData?.id }!)
+                            originData.remove(at: originData.firstIndex { $0.createdTime == removedData?.createdTime && $0.id == removedData?.id }!)
                         } catch let error {
                             print(error)
                         }
                     }
                 }
                 
-                NotificationCenter.default.post(name: .dataUpdated, object: self, userInfo: ["data": self.articleData])
+                self.articleData.value = originData
             }
     }
     
