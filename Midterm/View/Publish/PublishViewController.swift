@@ -54,7 +54,6 @@ class PublishViewController: UIViewController {
         }
     }
     
-    
     // Mark: Record current article data, if not nil, hidden button and all text field can't edit.
     private var presentingData: ArticleData? {
         didSet {
@@ -78,7 +77,7 @@ class PublishViewController: UIViewController {
         }
     }
 
-    private let contentViewPlaceHolder = "輸入內容"
+    private let contentViewPlaceHolder: String = .placeHolder
     
     override func viewDidLoad() {
         super.viewDidLoad()

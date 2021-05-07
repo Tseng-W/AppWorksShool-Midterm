@@ -10,4 +10,5 @@ import Foundation
 extension String {
     
     static let empty = ""
+    static let placeHolder = "輸入內容"
 }
