@@ -51,6 +51,16 @@ class HomeViewController: UIViewController {
         
         ArticleProvider.shared.snapData()
     }
+    
+    func switchHidden(controller: UIView, isHidden: Bool) {
+        
+        publishView.isUserInteractionEnabled = !isHidden
+        
+        UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: .curveEaseIn) {
+            self.publishView.alpha = isHidden ? 0 : 1
+            self.publishView.layoutIfNeeded()
+        }
+    }
 }
 
 extension HomeViewController: HomeViewDelegate {
@@ -61,14 +71,8 @@ extension HomeViewController: HomeViewDelegate {
     }
     
     func toPublish() {
-        publishView.isUserInteractionEnabled = true
-        
         viewingData.value = nil
-        
-        UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: .curveEaseIn) {
-            self.publishView.alpha = 1
-            self.publishView.layoutIfNeeded()
-        }
+        switchHidden(controller: publishView, isHidden: false)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -97,26 +101,18 @@ extension HomeViewController: HomeViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.cellForRow(at: indexPath)?.isSelected = false
         
+        tableView.cellForRow(at: indexPath)?.isSelected = false
         viewingData.value = articleData.value![indexPath.row]
         
-        publishView.isUserInteractionEnabled = true
-        UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: .curveEaseIn) {
-            self.publishView.alpha = 1
-            self.publishView.layoutIfNeeded()
-        }
+        switchHidden(controller: publishView, isHidden: false)
     }
 }
 
 extension HomeViewController: PublishDelegate {
     
     func hidden(_ controller: PublishViewController) {
-        publishView.isUserInteractionEnabled = false
-        UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.3, delay: 0, options: .curveEaseIn) {
-            self.publishView.alpha = 0
-            self.publishView.layoutIfNeeded()
-        }
+        switchHidden(controller: publishView, isHidden: true)
     }
     
     func publish(_ controller: PublishViewController, title: String, category: String, content: String) {
