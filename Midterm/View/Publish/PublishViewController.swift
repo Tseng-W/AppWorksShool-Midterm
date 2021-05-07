@@ -54,9 +54,11 @@ class PublishViewController: UIViewController {
         }
     }
     
+    
+    // Mark: Record current article data, if not nil, hidden button and all text field can't edit.
     private var presentingData: ArticleData? {
         didSet {
-            let canEdit = presentingData != nil
+            let canEdit = presentingData == nil
             titleTextField.isEnabled = canEdit
             categoryTextField.isEnabled = canEdit
             contentTextView.isEditable = canEdit

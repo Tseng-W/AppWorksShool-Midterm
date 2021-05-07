@@ -35,13 +35,15 @@ class HomeView: UIView {
             guard let delegate = delegate else { return }
             tableView.delegate = delegate
             tableView.dataSource = delegate
+            tableView.separatorColor = .clear
+            tableView.separatorStyle = .none
             
             tableView.lk_registerCell(nibName: String(describing: HomeTableViewCell.self), bundle: nil)
             
             tableView.mj_header = MJRefreshNormalHeader()
             tableView.mj_header?.setRefreshingTarget(self, refreshingAction: #selector(reloadTable))
             
-            tableView.separatorColor = .white
+            
         }
     }
     
