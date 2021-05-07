@@ -105,10 +105,6 @@ class PublishViewController: UIViewController {
     
     @objc func disappear() {
         delegate?.hidden(self)
-        titleTextField.text = .none
-        categoryTextField.text = .none
-        contentTextView.text = .none
-        contentTextView.textColor = .systemGray3
     }
     
     @IBAction func doPublish(_ sender: UIButton) {
